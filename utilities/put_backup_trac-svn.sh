@@ -1,15 +1,15 @@
 #!/bin/bash
 ####################################################################
 # Restore Backup
-# Author: Rodrigo Augosto C. (coto) <contact@protoboard.cl>
-# URL: http://protoboard.cl
+# Author: Coto Augosto C.
+# URL: http://beecoss.com
 # Created: Mar 5, 2010
 ####################################################################
 
 debug=""
 color='\e[1;37;44m'
 endColor='\e[0m'
-mailAdmin='contact@protoboard.cl'
+mailAdmin='contact@beecoss.com'
 
 ####################################################################
 # Get User, password and port

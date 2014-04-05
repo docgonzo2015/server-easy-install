@@ -10,16 +10,16 @@ lowercase(){
 }
 
 ####################################################################
-# Get infor about system
+# Get System Info
 ####################################################################
 shootProfile(){
 	OS=`lowercase \`uname\``
 	KERNEL=`uname -r`
 	MACH=`uname -m`
 
-	if [ "{$OS}" == "windowsnt" ]; then
+	if [ "${OS}" == "windowsnt" ]; then
 		OS=windows
-	elif [ "{$OS}" == "darwin" ]; then
+	elif [ "${OS}" == "darwin" ]; then
 		OS=mac
 	else
 		OS=`uname`
@@ -45,9 +45,11 @@ shootProfile(){
 				REV=`cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//`
 			elif [ -f /etc/debian_version ] ; then
 				DistroBasedOn='Debian'
-				DIST=`cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }'`
-				PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
-				REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
+				if [ -f /etc/lsb-release ] ; then
+			        	DIST=`cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }'`
+			                PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
+			                REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
+            			fi
 			fi
 			if [ -f /etc/UnitedLinux-release ] ; then
 				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
@@ -75,41 +77,6 @@ shootProfile
 #echo "MACH: $MACH"
 #echo "========"
 
-
-####################################################################
-# Get Distro Based on... (Deprecated)
-####################################################################
-get_DistroBasedOn(){
-	if [[ ! $OS = "linux" ]]; then
-		echo "hol"
-		return
-	fi
-	regExpLsbFile="/etc/(.*)[-_]"
-
-	etcFiles=`ls /etc/*[-_]{release,version} 2>/dev/null`
-	for file in $etcFiles; do
-	  if [[ $file =~ $regExpLsbFile ]]; then
-		 DistroBasedOn=${BASH_REMATCH[1]}
-		 echo ${BASH_REMATCH[1]}
-		 break
-	  else
-		 echo "??? Should not occur: Don't find any etcFiles ???"
-		 exit 1
-	  fi
-	done
-
-	DistroBasedOn=`lowercase $DistroBasedOn`
-
-	case $DistroBasedOn in
-		suse) 	DistroBasedOn="opensuse" ;;
-		linux)	DistroBasedOn="linuxmint" ;;
-	esac
-
-	readonly DistroBasedOn
-}
-#get_DistroBasedOn
-#echo $DistroBasedOn
-
 ####################################################################
 # Print Menu
 ####################################################################
@@ -122,8 +89,8 @@ printMenu(){
 	fi
 	clear
 	echo -e "$cyan Fast and Easy Web Server Installation $endColor"
-	echo "What do you want to do?"
-	echo -e "\t1) Create or create again the $user user"
+	echo "Choose an option writing its number and press enter:"
+	echo -e "\t1) Create a user"
 	echo -e "\t2) Create users profile (color in bash)"
 	echo -e "\t3) Update and Install (Apache, PHP, MySQL, SQLite, Django, Subversion)"
 	echo -e "\t4) Configurating SSH and IPTABLES"
@@ -137,12 +104,13 @@ printMenu(){
 	echo -e "\t12) I do not know, exit!"
 	#echo -e "\t13) Create VirtualHosts"
 	read option;
-	while [[ $option -gt 12 || ! $(echo $option | grep '^[1-9]') ]]
+	while [[ $option -gt 12 || ! $(echo $option | grep '^[1-9]$') ]]
 	do
 		printMenu
 	done
 	runOption
 }
+
 ####################################################################
 # Run an Option
 ####################################################################

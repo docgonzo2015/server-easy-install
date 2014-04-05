@@ -10,6 +10,7 @@ apache_service='/etc/init.d/apache2'
 
 userProfile='export PS1="\[\e[0;36m\]\u\[\e[1;33m\]@\H \[\033[0;36m\] \w\[\e[0m\]$ "'
 rootProfile='export PS1="\[\e[1;31m\]\u\[\e[1;33m\]@\H \[\033[0;36m\] \w\[\e[0m\]$ "'
+
 ####################################################################
 # Create USER
 ####################################################################
@@ -21,18 +22,19 @@ createUser(){
 	echo -e "$cyan============================ Creating a user $user... =============================$endColor"
 
 	apt-get install mkpasswd
-        echo -e "$cyan##### Deleting user $user #####$endColor"
+        echo -e "$cyan##### Deleting user: $user #####$endColor"
 	userdel -r $user
 
-	echo -e "$cyan##### Add user $user #####$endColor"
+	echo -e "$cyan##### Adding the user: $user #####$endColor"
 	adduser --system $user  --uid 550  --ingroup admin
 	usermod -p `mkpasswd $passwd` $user
 
-	echo -e "$cyan##### Add wheel group to sudo #####$endColor"
+	echo -e "$cyan##### Adding wheel group to sudo #####$endColor"
 	sed '/^#.*%admin\tALL=(ALL)\tALL.*/ s/^#//' /etc/sudoers > tmp
 	cat tmp > /etc/sudoers
 	echo -e "$cyan==================== User $user created successfully ====================$endColor"
 }
+
 ####################################################################
 # Profile USER
 ####################################################################
@@ -46,6 +48,7 @@ profileUser(){
 	source /root/.bashrc
 	echo -e "$cyan==================== Bash Profile to User root created ====================$endColor"
 }
+
 ####################################################################
 # Update and Install Apache, PHP, MySQL, Django, Subversion, TRAC
 ####################################################################
@@ -72,6 +75,7 @@ updateInstall(){
 
 	echo -e "$cyan================ Packages Installed successfully ================$endColor"
 }
+
 ####################################################################
 # Install TRAC
 ####################################################################
@@ -82,12 +86,9 @@ InstallTrac(){
 
 	echo -e "$cyan##### Trac Plugins Install #####$endColor" 
 	easy_install TracAccountManager TracProjectMenu
-	svn co http://recurser.com/svn/ganttcalendar/trunk/ ganttcalendar
-	cd ganttcalendar
-	python setup.py bdist_egg
-	easy_install dist/TracGanttCalendarPlugin-0.1-py2.6.egg
 	echo -e "$cyan================ Trac Installed successfully ================$endColor"
 }
+
 ####################################################################
 # Create VirtualHosts
 ####################################################################
